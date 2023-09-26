@@ -3,15 +3,18 @@ import os
 import datetime
 from twilio.rest import Client
 
+def day_time(day, hour):
+    return datetime.datetime.combine((CURRENT_TIME - datetime.timedelta(days=day)).date(),
+                                                  datetime.time(hour, 0, 0))
+
 news_api_keys = os.environ.get("NEWS_API_KEYS")
 news_url = "https://newsapi.org/v2/everything"
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
 CURRENT_TIME = datetime.datetime.now()
-# print(CURRENT_TIME)
-TWO_DAYS_AGO_MIDNIGHT = datetime.datetime.combine((CURRENT_TIME - datetime.timedelta(days=2)).date(),
-                                                  datetime.time(0, 0, 0))
-# print(TWO_DAYS_AGO_MIDNIGHT)
+print(CURRENT_TIME)
+TWO_DAYS_AGO_MIDNIGHT = day_time(2, 0)
+print(TWO_DAYS_AGO_MIDNIGHT)
 
 news_parameters = {
     "apiKey": news_api_keys,
@@ -20,13 +23,38 @@ news_parameters = {
     "to": CURRENT_TIME,
 }
 
-response = requests.get(news_url, params=news_parameters)
-response.raise_for_status()
-news_data = response.json()
+news_response = requests.get(news_url, params=news_parameters)
+news_response.raise_for_status()
+news_data = news_response.json()
 # print(news_data)
 print(news_data["articles"][:3])
 # Step 2. done.
+#-------------------------------------------------------------------------------------------
+# Step 1.:
 
+# stock_api_keys = os.environ.get("STOCK_API_KEYS")
+# stock_url = "https://www.alphavantage.co/query"
+#
+# stock_parameters = {
+#     "function": "TIME_SERIES_INTRADAY",
+#     "symbol": STOCK,
+#     "interval": "5min",
+#     "apiKey": stock_api_keys
+# }
+#
+# stock_response = requests.get(stock_url, params=stock_parameters)
+stock_response = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=TSLA&interval=60min&apikey=E21LGXJU3D3Q1VL7')
+stock_response.raise_for_status()
+stock_data = stock_response.json()
+# print(stock_data)
+
+YESTERDAY_1900 = str(day_time(1, 19))
+DAY_BEFORE_YESTERDAY_1900 = str(day_time(2, 19))
+# print(type(YESTERDAY_1900))
+# print(YESTERDAY_1900)
+
+
+print(stock_data["Time Series (60min)"][YESTERDAY_1900])
 
 
 
