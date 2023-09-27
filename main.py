@@ -3,6 +3,9 @@ import os
 import datetime
 from twilio.rest import Client
 
+account_sid = os.environ.get("ACCOUNT_SID")
+auth_token = os.environ.get("AUTH_TOKEN")
+
 def day_time(day, hour):
     return datetime.datetime.combine((CURRENT_TIME - datetime.timedelta(days=day)).date(),
                                                   datetime.time(hour, 0, 0))
@@ -77,13 +80,17 @@ difference = abs(yesterday_value - day_before_yesterday_value)
 # print(difference)
 diff_percent = (difference / yesterday_value) * 100
 # print(diff_percent)
-if  diff_percent >= 5:
+if  diff_percent >= 1:
     print(news_data["articles"][:3])
-
-
-
-
-
+    for item in news_data["articles"][:3]:
+        client = Client(account_sid, auth_token)
+        message = client.messages.create(
+            from_='+18444821071',
+            body=item,
+            to='+16268736132'
+        )
+        print(message.status)
+        print(message.sid)
 
 
 
@@ -114,11 +121,7 @@ if  diff_percent >= 5:
 #---------------------------------------------------------------------------------------------
 
 
-
-
-
-
-## STEP 1: Use https://www.alphavantage.co
+## STEP 1: Use https://www.alphavantage.co  VVVVV
 # When STOCK price increase/decreases by 5% between yesterday and the day before yesterday
 # then print("Get News").
 
