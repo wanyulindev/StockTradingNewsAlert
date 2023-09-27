@@ -33,7 +33,7 @@ news_response = requests.get(news_url, params=news_parameters)
 news_response.raise_for_status()
 news_data = news_response.json()
 # print(news_data)
-# print(news_data["articles"][:3])
+print(news_data["articles"][:3])
 # Step 2. done.
 #-------------------------------------------------------------------------------------------
 # Step 1.:
@@ -81,14 +81,18 @@ difference = abs(yesterday_value - day_before_yesterday_value)
 diff_percent = (difference / yesterday_value) * 100
 # print(diff_percent)
 if  diff_percent >= 1:
-    print(news_data["articles"][:3])
+    # print(news_data["articles"][:3])
     for item in news_data["articles"][:3]:
         client = Client(account_sid, auth_token)
         message = client.messages.create(
             from_='+18444821071',
-            body=item,
+            body=f"Your {STOCK} stock, has either drops/rises between these two days!\n"
+                 f"Here's article that you may concern:\n"
+                 f"Headline: {item['title']}.\n"
+                 f"Brief: {item['description']}",
             to='+16268736132'
         )
+        print(item)
         print(message.status)
         print(message.sid)
 
