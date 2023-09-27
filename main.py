@@ -2,6 +2,7 @@ import requests
 import os
 import datetime
 from twilio.rest import Client
+import time
 
 account_sid = os.environ.get("ACCOUNT_SID")
 auth_token = os.environ.get("AUTH_TOKEN")
@@ -24,9 +25,10 @@ TWO_DAYS_AGO_MIDNIGHT = day_time(2, 0)
 
 news_parameters = {
     "apiKey": news_api_keys,
-    "q": f"{COMPANY_NAME.lower()} AND {STOCK}",
-    "from": TWO_DAYS_AGO_MIDNIGHT,
-    "to": CURRENT_TIME,
+    "q": COMPANY_NAME
+    # "q": f"{COMPANY_NAME.lower()} AND {STOCK}"
+    # "from": TWO_DAYS_AGO_MIDNIGHT,
+    # "to": CURRENT_TIME,
 }
 
 news_response = requests.get(news_url, params=news_parameters)
@@ -82,7 +84,10 @@ diff_percent = (difference / yesterday_value) * 100
 # print(diff_percent)
 if  diff_percent >= 1:
     # print(news_data["articles"][:3])
+    print("News API Response:")
+    print(news_data)
     for item in news_data["articles"][:3]:
+        print("Processing article...")
         client = Client(account_sid, auth_token)
         message = client.messages.create(
             from_='+18444821071',
@@ -95,6 +100,8 @@ if  diff_percent >= 1:
         print(item)
         print(message.status)
         print(message.sid)
+        print("Message sent.")
+        time.sleep(10)
 
 
 
@@ -149,3 +156,35 @@ Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and 
 """
 
 
+# My Bug:
+# Since they are all three queued. could you tell me why I only got two SMS?
+# GPT:
+# The reason you are receiving only two SMS messages instead of three could be due to
+# various factors, and it might require some debugging to identify the exact cause.
+# Here are some potential reasons:
+#
+# News Availability: There may not have been enough relevant news articles available in
+# the specified date range and search criteria to fulfill all three messages. If the API
+# did not return three articles, you would have fewer SMS messages.
+#
+# Twilio Limitations: Twilio may have limitations on sending messages in quick succession.
+# It's possible that there was a rate-limiting issue or an issue with sending multiple
+# messages within a short timeframe.
+#
+# Conditional Logic: Your code may have conditional logic that filters out some articles
+# based on certain criteria. Ensure that your code is correctly filtering and selecting
+# the articles to send as messages.
+#
+# Error Handling: Check for any errors or exceptions that might have occurred during the
+# execution of your code. An error could have interrupted the process of sending the
+# third SMS.
+#
+# To troubleshoot this issue:
+#
+# Verify that the News API is returning the expected number of articles.
+# Check for any error messages or exceptions in your code or logs.
+# Add debugging statements or print statements to track the flow of your code and see
+# which articles are being processed and sent as SMS messages.
+# By systematically examining these factors and debugging your code, you should be able
+# to determine why you are receiving only two SMS messages and address the issue
+# accordingly.
